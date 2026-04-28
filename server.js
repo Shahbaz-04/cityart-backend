@@ -22,50 +22,61 @@ const app = express();
 
 // 1. DATABASE CONNECTION & SEEDING
 connectDB().then(async () => {
-    console.log('Database Connected...');
+    console.log('Database Connected Successfully to MongoDB Atlas');
     
-    // Seeding logic ko async/await ke saath handle karna behtar hai
     try {
-        // Seed Products
+        // Seed Products: Agar database khali hai toh sample data daal do
         const existingProducts = await Product.find({});
-        if (existingProducts.length === 0) {
+        if (existingProducts.length === 0 && sampleProducts) {
             await Product.insertMany(sampleProducts);
-            console.log('Sample products seeded.');
+            console.log('Sample products seeded successfully.');
         }
 
-        // Seed Admin
+        // Seed Admin: Initial login ke liye
         const adminExists = await User.findOne({ username: 'admin' });
         if (!adminExists) {
             const admin = new User({
                 username: 'admin',
-                password: process.env.ADMIN_PASSWORD || 'admin123', // Use Env variable for security
+                password: process.env.ADMIN_PASSWORD || 'admin123', 
                 role: 'admin'
             });
             await admin.save();
-            console.log('Admin user created successfully.');
+            console.log('Default Admin user created.');
         }
     } catch (err) {
         console.error('Seeding Error:', err.message);
     }
+}).catch(err => {
+    console.error('Database connection failed:', err.message);
 });
 
-// 2. MIDDLEWARES
-// CORS Configuration: Dynamic allow list
+// 2. MIDDLEWARES & CORS FIX
 const allowedOrigins = [
-    "https://your-app-name.netlify.app", // <--- Apna actual Netlify link yahan dalein
+    "https://frolicking-sorbet-603fd2.netlify.app", // Aapka Netlify URL
     "http://localhost:3000",
-    "http://localhost:5173" // Vite users ke liye
+    "http://localhost:5173"
 ];
+
+// Dynamically add FRONTEND_URL from environment if it exists
+if (process.env.FRONTEND_URL) {
+    const cleanUrl = process.env.FRONTEND_URL.replace(/\/$/, ""); // Remove trailing slash
+    if (!allowedOrigins.includes(cleanUrl)) {
+        allowedOrigins.push(cleanUrl);
+    }
+}
 
 app.use(cors({
     origin: function (origin, callback) {
-        // allow requests with no origin (like mobile apps or curl requests)
+        // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) === -1) {
-            const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-            return callback(new Error(msg), false);
+        
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            // Logs help to see what exactly is being blocked
+            console.log("CORS Blocked Origin:", origin);
+            callback(new Error('CORS blocked this request'));
         }
-        return callback(null, true);
     },
     credentials: true
 }));
@@ -73,18 +84,20 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 3. ROUTES
+// 3. API ROUTES
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/auth', authRoutes);
 
-// Static assets (Images ke liye agar local use kar rahe hain)
-app.use('/assets', express.static(path.join(__dirname, '..', 'frontend', 'public', 'assets')));
+// Static assets for images
+// Ensure 'public/assets' folder exists in your backend root
+app.use('/assets', express.static(path.join(__dirname, 'public', 'assets')));
 
-// 4. PRODUCTION SETUP (Serving Frontend)
+// 4. PRODUCTION SETUP
+// Agar aap Render par hi frontend serve kar rahe hain
 if (process.env.NODE_ENV === 'production') {
-    const frontendBuildPath = path.resolve(__dirname, '..', 'frontend', 'dist'); // Vite 'dist' use karta hai, React 'build'
+    const frontendBuildPath = path.resolve(__dirname, 'build'); // Change to 'dist' if using Vite
     app.use(express.static(frontendBuildPath));
 
     app.get('*', (req, res) => {
@@ -94,13 +107,10 @@ if (process.env.NODE_ENV === 'production') {
     });
 }
 
-// Health Check Route
+// Health Check
 app.get('/api/status', (req, res) => {
-    res.json({ 
-        status: 'API is running',
-        environment: process.env.NODE_ENV || 'development'
-    });
+    res.json({ status: 'API is live', database: 'Connected' });
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`));
