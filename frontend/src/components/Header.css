@@ -1,0 +1,175 @@
+/* frontend/src/components/Header.css */
+
+.main-header {
+  background: linear-gradient(180deg, #ffffff 0%, #fbfbff 100%); /* subtle gradient */
+  padding: 18px 28px;
+  display: flex; /* आइटम्स को एक लाइन में लाने के लिए */
+  justify-content: space-between; /* आइटम्स के बीच जगह बनाने के लिए */
+  align-items: center; /* आइटम्स को वर्टिकली सेंटर में लाने के लिए */
+  gap: 20px;
+  box-shadow: 0 6px 18px rgba(24, 39, 75, 0.06); /* softer shadow */
+  border-bottom: 1px solid #f0f1f5;
+}
+
+.logo a {
+  text-decoration: none;
+  color: #222222;
+}
+
+.main-nav ul {
+  list-style: none; /* बुलेट पॉइंट्स हटाने के लिए */
+  margin: 0;
+  padding: 0;
+  display: flex; /* लिंक्स को एक लाइन में लाने के लिए */
+}
+
+.main-nav li {
+  margin-left: 25px; /* लिंक्स के बीच में जगह */
+}
+
+.main-nav a {
+  text-decoration: none;
+  color: #555555;
+  font-size: 1rem; /* 16px */
+  font-weight: 400;
+  transition: color 0.3s ease; /* होवर इफेक्ट के लिए */
+}
+
+.main-nav a:hover {
+  color: #007bff; /* लिंक पर माउस ले जाने पर रंग बदलेगा */
+}
+
+/* Logo image and text */
+.logo a {
+  display: flex;
+  align-items: center;
+}
+
+.logo-image {
+  width: 96px;
+  height: 96px;
+  margin-right: 18px;
+  object-fit: contain;
+  border-radius: 10px; /* subtle rounded */
+}
+
+.logo-text {
+  font-size: 1.7rem; /* larger and more prominent */
+  letter-spacing: 1.5px;
+  color: #0b1b2b;
+  text-transform: uppercase;
+  display: inline-block;
+  margin-bottom: 2px;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.08), 0 6px 20px rgba(11,27,43,0.08);
+}
+
+.logo-meta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.04;
+}
+
+.logo-text {
+  font-weight: 800; /* extra-bold for clarity */
+  line-height: 1.05;
+}
+
+.logo-address {
+  font-size: 0.85rem;
+  color: #555; /* slightly darker for readability */
+  margin-top: 4px;
+  opacity: 0.9;
+}
+
+.logo-tagline {
+  font-size: 0.82rem;
+  color: #3a3a3a;
+  margin-top: 12px; /* moved down a bit */
+  opacity: 0.95;
+  letter-spacing: 0.2px;
+}
+
+/* Right side (nav + contacts) */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.header-contacts {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-contacts .phone {
+  color: #0b62a4;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.header-contacts .cta {
+  background: linear-gradient(90deg,#ff7a18,#ff4e00);
+  color: #fff;
+  padding: 9px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(255,78,0,0.18);
+}
+
+.header-contacts .cta:hover { transform: translateY(-2px); }
+
+/* Navigation styling */
+.main-nav ul {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.main-nav a {
+  text-decoration: none;
+  color: #444;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+
+.main-nav a:hover {
+  background: rgba(0, 123, 255, 0.06);
+  color: #0066cc;
+}
+
+/* Responsive: stack on small screens */
+@media (max-width: 720px) {
+  .main-header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px 16px;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .main-nav {
+    margin-top: 12px;
+  }
+  .main-nav ul {
+    justify-content: space-around;
+    flex-wrap: wrap;
+  }
+  .logo-image {
+    width: 56px;
+    height: 56px;
+  }
+  .logo-text {
+    font-size: 1.15rem;
+  }
+  .header-right {
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+}
